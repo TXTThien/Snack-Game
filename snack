@@ -1,0 +1,109 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace WindowsFormsApp4
+{
+    class Snake
+    {
+        public Snake()
+        {
+            this.Head = new Point(1, 1);
+            this.Tail = new List<Point>();
+            this.Tail.Add(new Point(-1, -1));
+            this.Tail.Add(new Point(-1, -1));
+        }
+        public Point Head 
+        {
+            get;
+            set;
+        }
+        public List<Point> Tail
+        {
+            get;
+            set;
+        }
+        private void SnackMove (int aRow , int aColumn)
+        {
+
+            for (int i = 0; i < this.Tail.Count; i++)
+            {
+                int tmpRow = this.Tail[i].Row;
+                int tmpColumn = this.Tail[i].Column;
+
+                this.Tail[i].Row = aRow;
+                this.Tail[i].Column = aColumn;
+
+                aRow = tmpRow;
+                aColumn = tmpColumn;
+            }
+        }
+        public bool IsHead ()
+        {
+            for (int i= 0; i<this.Tail.Count; i++)
+            {
+                Point element = this.Tail[i];
+                if (element.Row == this.Head.Row && element.Column == this.Head.Column)
+                {
+                    return true;
+                }
+            }    
+            return false;
+        }
+        public void Move (string direction, int n, int m)
+        {
+            if (direction == "right")
+            {
+                int currentColumn = this.Head.Column;
+                this.Head.Column = currentColumn + 1;
+                //Thay đổi vị trí đầu rắn
+                if (this.Head.Column >= m - 1)
+                {
+                    this.Head.Column = 1;
+                }
+
+                this.SnackMove(this.Head.Row, currentColumn);
+               
+            }
+            else if (direction == "left")
+            {
+                int currentColumn = this.Head.Column;
+                this.Head.Column = currentColumn - 1;
+
+                if (this.Head.Column <= 0)
+                {
+                    this.Head.Column = m - 2;
+                }
+                this.SnackMove(this.Head.Row, currentColumn);
+
+            }
+            else if (direction == "up")
+            {
+                int currentRow = this.Head.Row;
+                this.Head.Row = currentRow - 1;
+
+                if (this.Head.Row <= 0)
+                {
+                    this.Head.Row = n - 2;
+                }
+                this.SnackMove( currentRow, this.Head.Column);
+
+            }
+
+            else if (direction == "down")
+            {
+                int currentRow = this.Head.Row;
+                this.Head.Row = currentRow + 1;
+
+                if (this.Head.Row >= n - 1)
+                {
+                    this.Head.Row = 1;
+                }
+                this.SnackMove(currentRow, this.Head.Column);
+
+            }
+        }
+    }
+}
