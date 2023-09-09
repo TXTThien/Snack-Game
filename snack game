@@ -1,0 +1,192 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace WindowsFormsApp4
+{
+    static class Program
+    {
+        static void Main(string [] args)
+        {
+            Thread thread = new Thread(Program.Key);
+            thread.Start();
+            Food.randomPoint(Snake,n,m);
+            while (true)
+            {
+                Console.Clear();
+                resetWall();
+                countWall();
+                countFood();
+                countSnake();
+                drawWall();
+                if (Snake.Head.Row == Food.point.Row && Snake.Head.Column == Food.point.Column)
+                {
+                    Snake.Tail.Add(new Point(-1, -1));
+                    score++;
+                    speed -= 50;
+                    speed = speed < 100 ? 100 : speed; 
+                    Food.randomPoint(Snake, n, m);
+                }
+                if (Snake.IsHead())
+                {
+                    Console.WriteLine("Game Over");
+                    isGameOver = true;
+                    break;
+                }
+                Snake.Move(direction, n, m);
+
+                Task.Delay(speed).Wait();
+            }
+
+        }
+        static bool isGameOver = false;
+
+        static int n = 15;
+        static int m = 30;
+        static int speed = 100;
+        static int score = 0;
+
+        static string SnS = "*";
+        static string B = "#";
+        static string S = " ";
+        static string Fruit = "@";
+
+        static string direction = "right";
+        static string[,] Board = new string[n, m];
+
+        static Snake Snake = new Snake();
+        static Food Food = new Food();
+
+        private static void countWall()
+        {
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    if (i == 0 || i == (n - 1) || j == 0 || j == m - 1)
+                    {
+                        Board[i, j] = B;
+                    }
+                }
+            }
+
+        }
+        private static void drawWall()
+        {
+            Console.WriteLine($"Score: {score}, Speed: {speed}");
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    string value = Board[i, j];
+                    if (value.Equals(B))
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.Write(value);
+                        Console.ResetColor();
+                    }
+                    else
+                    { 
+                        Console.Write(value);
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+        private static void resetWall()
+        {
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    Board[i, j] = S;
+                }
+            }
+        }
+        private static void countFood()
+        {
+            for (int i=0; i < n; i++)
+            {
+                for (int j = 0;j < m;j++)
+                {
+                    if (i== Food.point.Row && j== Food.point.Column)
+                    {
+                        Board[i, j] = Fruit;
+                    }
+                }
+            }
+        }
+        private static void countSnake()
+        {
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    int row = Snake.Head.Row;
+                    int column = Snake.Head.Column;
+
+                    if (i ==row && j == column)
+                    {
+                        Board[i, j] =SnS;
+                    }
+                    List<Point> tail = Snake.Tail;
+
+                    for (int k=0; k< tail.Count ; k++)
+                    {
+                        Point element = tail[k];
+                        {
+                            if (i == element.Row && j==element.Column)
+                            {
+                                Board[i, j] = SnS; 
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        }
+        static void Key ()
+        {
+            while (!isGameOver)
+            {
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                if (keyInfo.Key == ConsoleKey.UpArrow)
+                {
+                    if (direction != "down")
+                    {
+                        direction = "up";
+
+                    }
+                }
+                if (keyInfo.Key == ConsoleKey.DownArrow)
+                {
+                    if (direction != "up")
+                    {
+                        direction = "down";
+
+                    }
+                }
+                if (keyInfo.Key == ConsoleKey.RightArrow)
+                {
+                    if (direction != "left")
+                    {
+                        direction = "right";
+                    }
+                }
+                if (keyInfo.Key == ConsoleKey.LeftArrow)
+                {
+                    if (direction != "right")
+                    {
+                        direction = "left";
+
+                    }
+                }
+            }
+            
+        }
+    }
+}
